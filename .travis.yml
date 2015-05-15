@@ -1,0 +1,11 @@
+language: python
+python:
+    - 2.7
+script: make test-$TEST_CMD
+env:
+    - TOXENV=sqlite
+    - TOXENV=postgres
+    - TOXENV=flake8
+notifications:
+email:
+    - ci-notify@openlabs.co.in
