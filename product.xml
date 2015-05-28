@@ -23,5 +23,7 @@
             <field name="inherit" ref="product.template_view_tree" />
             <field name="name">template_tree</field>
         </record>
+        <menuitem name="Product Templates" id="product.menu_template" parent="product.menu_main_product" /> 
+        <menuitem name="Products" id="product.menu_product" parent="product.menu_template" /> 
     </data>
 </tryton> 
