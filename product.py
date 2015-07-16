@@ -44,11 +44,15 @@ class Template:
 class Product:
     __name__ = "product.product"
 
-    list_price = fields.Numeric(
-        'List Price', digits=(16, 4), required=True,
-        states=STATES, depends=DEPENDS
+    list_price = fields.Property(
+        fields.Numeric(
+            'List Price', digits=(16, 4), required=True,
+            states=STATES, depends=DEPENDS
+        )
     )
-    cost_price = fields.Numeric(
-        'Cost Price', digits=(16, 4), required=True,
-        states=STATES, depends=DEPENDS
+    cost_price = fields.Property(
+        fields.Numeric(
+            'Cost Price', digits=(16, 4), required=True,
+            states=STATES, depends=DEPENDS
+        )
     )
