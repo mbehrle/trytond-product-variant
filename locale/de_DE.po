@@ -9,3 +9,11 @@ msgstr "Kostenpreis"
 msgctxt "field:product.product,list_price:"
 msgid "List Price"
 msgstr "Listenpreis"
+
+msgctxt "field:product.product,name:"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "field:product.product,variant_name:"
+msgid "Variant Name"
+msgstr "Variantenname"
