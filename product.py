@@ -82,6 +82,5 @@ class Product:
         variant_name field to the domain.
         """
         domain = super(Product, cls).search_rec_name(name, clause)
-
-        domain.append((('variant_name', ) + tuple(clause[1:])))
+        domain.append(('variant_name', ) + tuple(clause[1:]))
         return domain
