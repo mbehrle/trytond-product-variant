@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
-from trytond.pool import PoolMeta
+from trytond.pool import PoolMeta, Pool
 from trytond.model import fields
 from trytond.pyson import Eval
 
@@ -85,3 +85,15 @@ class Product:
         domain = super(Product, cls).search_rec_name(name, clause)
         domain.append(('variant_name', ) + tuple(clause[1:]))
         return domain
+
+    @classmethod
+    def set_template(cls, products, name, value):
+        '''
+        Provide a generic setter for function fields when using
+        template fields on products. (In analogy to get_template,
+        search_template for the use in downstream modules)
+        '''
+        Template = Pool().get('product.template')
+        Template.write([p.template for p in products], {
+                name: value,
+                })
