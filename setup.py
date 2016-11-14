@@ -1,146 +1,109 @@
 #!/usr/bin/env python
+# The COPYRIGHT file at the top level of this repository contains
+# the full copyright notices and license terms.
+
+from setuptools import setup
 import re
 import os
-import time
-import sys
-import unittest
-import ConfigParser
-from setuptools import setup, Command
+import io
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
+
+MODULE2PREFIX = {}
 
 
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    return io.open(
+        os.path.join(os.path.dirname(__file__), fname),
+        'r', encoding='utf-8').read()
 
 
-class SQLiteTest(Command):
-    """
-    Run the tests on SQLite
-    """
-    description = "Run tests on SQLite"
+def get_require_version(name):
+    if minor_version % 2:
+        require = '%s >= %s.%s.dev0, < %s.%s'
+    else:
+        require = '%s >= %s.%s, < %s.%s'
+    require %= (name, major_version, minor_version,
+        major_version, minor_version + 1)
+    return require
 
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        if self.distribution.tests_require:
-            self.distribution.fetch_build_eggs(self.distribution.tests_require)
-
-        os.environ['TRYTOND_DATABASE_URI'] = 'sqlite://'
-        os.environ['DB_NAME'] = ':memory:'
-
-        from tests import suite
-        test_result = unittest.TextTestRunner(verbosity=3).run(suite())
-
-        if test_result.wasSuccessful():
-            sys.exit(0)
-        sys.exit(-1)
-
-
-class PostgresTest(Command):
-    """
-    Run the tests on Postgres.
-    """
-    description = "Run tests on Postgresql"
-
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        if self.distribution.tests_require:
-            self.distribution.fetch_build_eggs(self.distribution.tests_require)
-
-        os.environ['TRYTOND_DATABASE_URI'] = 'postgresql://'
-        os.environ['DB_NAME'] = 'test_' + str(int(time.time()))
-
-        from tests import suite
-        test_result = unittest.TextTestRunner(verbosity=3).run(suite())
-
-        if test_result.wasSuccessful():
-            sys.exit(0)
-        sys.exit(-1)
-
-
-config = ConfigParser.ConfigParser()
+config = ConfigParser()
 config.readfp(open('tryton.cfg'))
 info = dict(config.items('tryton'))
 for key in ('depends', 'extras_depend', 'xml'):
     if key in info:
         info[key] = info[key].strip().splitlines()
-major_version, minor_version, _ = info.get('version', '0.0.1').split('.', 2)
+version = info.get('version', '0.0.1')
+major_version, minor_version, _ = version.split('.', 2)
 major_version = int(major_version)
 minor_version = int(minor_version)
+name = 'm9s_product_variant'
+download_url = 'https://gitlab.com/m9s/product_variant.git'
 
 requires = []
-
-MODULE2PREFIX = {}
-
-MODULE = "product_variant"
-PREFIX = "fio"
 for dep in info.get('depends', []):
-    if not re.match(r'(ir|res|webdav)(\W|$)', dep):
-        requires.append(
-            '%s_%s >= %s.%s, < %s.%s' % (
-                MODULE2PREFIX.get(dep, 'trytond'), dep,
-                major_version, minor_version, major_version,
-                minor_version + 1
-            )
-        )
-requires.append(
-    'trytond >= %s.%s, < %s.%s' % (
-        major_version, minor_version, major_version, minor_version + 1
-    )
-)
-setup(
-    name='%s_%s' % (PREFIX, MODULE),
-    version=info.get('version', '0.0.1'),
-    description="Product Variant",
-    author="Fulfil.IO Inc., Openlabs Technologies and Consulting (P) Ltd.",
-    author_email='info@fulfil.io',
-    url='http://www.fulfil.io/',
-    package_dir={'trytond.modules.%s' % MODULE: '.'},
+    if not re.match(r'(ir|res)(\W|$)', dep):
+        prefix = MODULE2PREFIX.get(dep, 'trytond')
+        requires.append(get_require_version('%s_%s' % (prefix, dep)))
+requires.append(get_require_version('trytond'))
+
+tests_require = []
+dependency_links = []
+if minor_version % 2:
+    # Add development index for testing with proteus
+    dependency_links.append('https://trydevpi.tryton.org/')
+
+setup(name=name,
+    version=version,
+    description='Tryton Product Variant Module',
+    long_description=read('README.md'),
+    author='MBSolutions',
+    author_email='info@m9s.biz',
+    url='http://www.m9s.biz/',
+    download_url=download_url,
+    keywords='',
+    package_dir={'trytond.modules.product_variant': '.'},
     packages=[
-        'trytond.modules.%s' % MODULE,
-        'trytond.modules.%s.tests' % MODULE,
-    ],
+        'trytond.modules.product_variant',
+        'trytond.modules.product_variant.tests',
+        ],
     package_data={
-        'trytond.modules.%s' % MODULE: info.get('xml', [])
-        + info.get('translation', [])
-        + ['tryton.cfg', 'locale/*.po', 'tests/*.rst', 'reports/*.odt']
-        + ['view/*.xml'],
-    },
+        'trytond.modules.product_variant': (info.get('xml', [])
+            + ['tryton.cfg', 'view/*.xml', 'locale/*.po', '*.odt',
+                'icons/*.svg', 'tests/*.rst']),
+        },
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
-        'Natural Language :: English',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
         'Framework :: Tryton',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Financial and Insurance Industry',
+        'Intended Audience :: Legal Industry',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Natural Language :: Catalan',
+        'Natural Language :: English',
+        'Natural Language :: Spanish',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Office/Business',
-    ],
-    long_description=open('README.rst').read(),
-    license='BSD',
+        ],
+    license='GPL-3',
     install_requires=requires,
+    dependency_links=dependency_links,
     zip_safe=False,
     entry_points="""
     [trytond.modules]
-    %s = trytond.modules.%s
-    """ % (MODULE, MODULE),
+    product_variant = trytond.modules.product_variant
+    """,
     test_suite='tests',
     test_loader='trytond.test_loader:Loader',
-    cmdclass={
-        'test': SQLiteTest,
-        'test_on_postgres': PostgresTest,
-    }
-)
+    tests_require=tests_require,
+    use_2to3=True,
+    )

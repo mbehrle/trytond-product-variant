@@ -1,15 +1,10 @@
-# -*- coding: utf-8 -*-
-"""
-    __init__.py
-
-"""
+# The COPYRIGHT file at the top level of this repository contains
+# the full copyright notices and license terms.
 from trytond.pool import Pool
-from product import Template, Product
-
+from product import *
 
 def register():
     Pool.register(
         Template,
         Product,
-        module='product_variant', type_='model'
-    )
+        module='product_variant', type_='model')

@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of this repository contains the full
+copyright notices and license terms. -->
 <tryton>
     <data>
         <record model="ir.ui.view" id="product_view_form">
@@ -12,7 +14,6 @@
             <field name="name">product_tree</field>
         </record>
        
-        <!-- Product Template View and Actions -->
         <record model="ir.ui.view" id="template_view_form">
             <field name="model">product.template</field>
             <field name="inherit" ref="product.template_view_form" />
@@ -23,7 +24,5 @@
             <field name="inherit" ref="product.template_view_tree" />
             <field name="name">template_tree</field>
         </record>
-        <menuitem name="Product Templates" id="product.menu_template" parent="product.menu_main_product" /> 
-        <menuitem name="Products" id="product.menu_product" parent="product.menu_template" /> 
     </data>
 </tryton> 
