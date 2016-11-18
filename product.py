@@ -68,13 +68,10 @@ class Product:
     @fields.depends('variant_name', 'template')
     def on_change_with_name(self, name=None):  # pragma: no cover
         '''
-        This method changes the name to `[code] variant_name` if they are set,
+        This method returns the variant_name` if it is set,
         else it returns the template name.
         '''
-        name_ = self.variant_name or self.template.name
-        if self.code:
-            name_ = '[%s] %s' % (self.code , name_)
-        return name_
+        return self.variant_name or self.template.name
 
     @classmethod
     def search_rec_name(cls, name, clause):
