@@ -2,6 +2,10 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
+msgctxt "field:product.product,brand:"
+msgid "Brand"
+msgstr "Marke"
+
 msgctxt "field:product.product,cost_price:"
 msgid "Cost Price"
 msgstr "Kostenpreis"
