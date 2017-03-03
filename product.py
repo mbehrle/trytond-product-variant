@@ -77,8 +77,13 @@ class Product:
         '''
         Return the variant_name` if it is set, else return
         the template name.
+        This method changes the name to `[code] variant_name` if they are set,
+        else it returns the template name.
         '''
-        return self.variant_name or self.template.name
+        name_ = self.variant_name or self.template.name
+        if self.code:
+            name_ = '[%s] %s' % (self.code , name_)
+        return name_
 
     @classmethod
     def search_rec_name(cls, name, clause):
