@@ -53,11 +53,6 @@ class Product:
         )
     )
 
-    name = fields.Function(
-        fields.Char('Name'),
-        getter='on_change_with_name', searcher='search_rec_name'
-    )
-
     variant_name = fields.Char(
         'Variant Name', translate=True,
         select=True, states={
